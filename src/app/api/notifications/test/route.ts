@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
+    const cookieStore = cookies();
+    const supabase = createClient(cookieStore);
     
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -127,7 +129,8 @@ export async function POST(request: NextRequest) {
 }
 
 async function checkNotificationPermission(fromUser: any, toUserId: string): Promise<boolean> {
-  const supabase = createClient();
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
   
   // Coaches can send notifications to their assigned students
   if (fromUser.role === 'coach') {
